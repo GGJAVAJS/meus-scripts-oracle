@@ -1,4 +1,3 @@
-# meus-scripts-oracle
 # Meus Scripts Oracle para DBA
 
 Bem-vindo ao meu repositório de scripts Oracle! Esta é uma coleção de scripts que desenvolvi e utilizo para tarefas comuns de administração de banco de dados Oracle.
