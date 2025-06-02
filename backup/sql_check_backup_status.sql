@@ -13,7 +13,7 @@
 -- Historico de Alteracoes:
 -- Data       | Autor          | Descricao
 -- -----------------------------------------------------------------------------------
--- [Data]     | [Seu Nome]     | Versao inicial
+-- 20/05/2025 | Gutsdata       | Versao inicial do script
 -- -----------------------------------------------------------------------------------
 
 -- Configura o formato da saída SQL*Plus (opcional, para melhor visualização)
