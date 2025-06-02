@@ -30,7 +30,7 @@ Os scripts estão organizados nas seguintes pastas (ou estarão em breve):
 ## Pré-requisitos Gerais
 
 *   A maioria dos scripts requer privilégios de DBA ou acesso a views de dicionário de dados específicas (ex: `V$`, `DBA_`).
-*   Testados primariamente em Oracle Database [Sua Versão Principal, ex: 19c], mas muitos devem funcionar em outras versões com pequenas ou nenhuma adaptação.
+*   Testados primariamente em Oracle Database 19c, mas muitos devem funcionar em outras versões com pequenas ou nenhuma adaptação.
 
 ## ⚠️ Disclaimer ⚠️
 
