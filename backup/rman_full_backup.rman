@@ -1,0 +1,80 @@
+-- -----------------------------------------------------------------------------------
+-- Nome do Script: rman_full_backup.rman
+-- Proposito: Realiza um backup online completo (full) do banco de dados,
+--            incluindo archivelogs e controlfile.
+-- SGBD: Oracle Database
+-- Autor: Gustavo/GGJAVAJS
+-- Data: 19/05/2025
+--
+-- IMPORTANTE:
+-- 1. O banco de dados DEVE estar em modo ARCHIVELOG para backups online.
+-- 2. Configure o destino do backup (FORMAT) de acordo com seu ambiente.
+-- 3. Este script assume que o RMAN está conectado ao banco de dados alvo.
+--    Exemplo de conexão: rman target /
+--    Exemplo de execução: RMAN> @/caminho/para/rman_full_backup.rman
+--
+-- Historico de Alteracoes:
+-- Data       | Autor          | Descricao
+-- -----------------------------------------------------------------------------------
+-- [Data]     | [Seu Nome]     | Versao inicial
+-- -----------------------------------------------------------------------------------
+
+-- Configurações (Exemplos - ajuste conforme necessário)
+-- Define a política de retenção para 7 dias (backups mais antigos são marcados como obsoletos)
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;
+
+-- Define o dispositivo padrão para DISK (pode ser SBT para fita)
+CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+
+-- Habilita o autobackup do controlfile (essencial!)
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/app/oracle/oradata/ORCL/backup/cf_%F.bkp'; -- AJUSTE O CAMINHO!
+
+-- Configura o formato dos arquivos de backup em disco (ajuste o caminho!)
+-- %d = Nome do Banco, %T = Data (YYYYMMDD), %s = Número do Backup Set, %p = Número da Peça
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT '/u01/app/oracle/oradata/ORCL/backup/full_%d_%T_%s_%p.bkp'; -- AJUSTE O CAMINHO!
+
+-- Configura o paralelismo (opcional, ajuste conforme o número de CPUs/IO)
+-- CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+
+-- Configura a compressão (opcional, pode impactar CPU mas economiza espaço)
+-- CONFIGURE COMPRESSION ALGORITHM 'MEDIUM' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE;
+
+-- Bloco RUN para executar os comandos de backup
+RUN {
+  -- Aloca canais se não estiver usando paralelismo na configuração default
+  -- ALLOCATE CHANNEL ch1 DEVICE TYPE DISK;
+  -- ALLOCATE CHANNEL ch2 DEVICE TYPE DISK;
+
+  -- Realiza o backup completo do banco de dados
+  -- AS COMPRESSED BACKUPSET utiliza a compressão configurada
+  BACKUP AS COMPRESSED BACKUPSET
+    DATABASE -- Faz backup de todos os datafiles
+    PLUS ARCHIVELOG -- Inclui todos os archive logs gerados até o momento do backup
+    DELETE INPUT;   -- Apaga os archive logs do disco APÓS o backup bem-sucedido deles
+                    -- CUIDADO: Use DELETE ALL INPUT se quiser apagar todos os archives já backupeados anteriormente também.
+                    --          DELETE INPUT apaga apenas os que foram backupeados NESTA execução.
+
+  -- Um backup adicional do controlfile e SPFILE é sempre uma boa prática,
+  -- embora o autobackup já cuide disso.
+  BACKUP CURRENT CONTROLFILE;
+  BACKUP SPFILE;
+
+  -- Libera canais alocados manualmente
+  -- RELEASE CHANNEL ch1;
+  -- RELEASE CHANNEL ch2;
+
+  -- Valida os backupsets criados (opcional, mas recomendado)
+  -- RESTORE VALIDATE DATABASE; -- Verifica se o backup pode ser restaurado
+}
+
+-- Reporta backups obsoletos que podem ser deletados conforme a política de retenção
+REPORT OBSOLETE;
+
+-- Deleta backups obsoletos (opcional, pode ser uma tarefa separada)
+-- DELETE NOPROMPT OBSOLETE;
+
+-- Lista um resumo dos backups para confirmação
+LIST BACKUP SUMMARY;
+
+EXIT;
