@@ -5,7 +5,7 @@ Bem-vindo ao meu repositório de scripts Oracle! Esta é uma coleção de script
 ## Propósito
 
 O objetivo deste repositório é:
-*   Servir como um portfólio pessoal de scripts DBA.
+*   Servir como um portfólio pessoal de scripts DBA que foram sendo estudos durante esses ultimos meses.
 *   Compartilhar conhecimento com a comunidade.
 *   Manter um local centralizado para meus scripts utilitários.
 
